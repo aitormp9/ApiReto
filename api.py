@@ -1,4 +1,13 @@
 from flask import Flask, request, jsonify
+import xmlrpc.client
+
+url = "http://reto1odoo.duckdns.org:8069"
+bd = "Reto1odoo"
+usuario = "mikelaitoribai"
+contrasena = "maireto"
+
+common = xmlrpc.client.ServerProxy(f'{url}/xmlrpc/2/common')
+uid = common.authenticate(db, usuario, contrasena, {})
 
 app = Flask(__name__)
 clientes = list()
@@ -20,4 +29,3 @@ def eliminarCliente(nombre):
 
 if __name__ == '__main__':
     app.run()
-    #app.run(debug=True, port=8069,host='54.196.237.226')
