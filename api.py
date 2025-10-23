@@ -7,7 +7,7 @@ usuario = "mikelaitoribai"
 contrasena = "maireto"
 
 common = xmlrpc.client.ServerProxy(f'{url}/xmlrpc/2/common')
-uid = common.authenticate(db, usuario, contrasena, {})
+uid = common.authenticate(bd, usuario, contrasena, {})
 
 app = Flask(__name__)
 clientes = list()
