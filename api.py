@@ -29,9 +29,9 @@ def getDatos():
     )
 
 
-    personas_path = r"C:\Users\ikmsuarez23\Desktop\Reto\ApiReto\usuario.json"
-    with open(personas_path, "w", encoding="utf-8") as f:
-        json.dump(clientes, f, indent=4, ensure_ascii=False)
+    personas = r"C:\Users\ikmsuarez23\Desktop\Reto\ApiReto\usuario.json"
+    with open(personas, "w", encoding="utf-8") as usuario:
+        json.dump(clientes, usuario, indent=4, ensure_ascii=False)
 
     return jsonify(clientes)
 
