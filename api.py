@@ -1,6 +1,6 @@
+import json
 from flask import Flask, request, jsonify
 import xmlrpc.client
-
 
 url = "http://reto1odoo.duckdns.org:8069"
 bd = "Reto1-TechSolutions"
@@ -9,11 +9,9 @@ contrasena = "maireto"
 
 common = xmlrpc.client.ServerProxy(f'{url}/xmlrpc/2/common')
 uid = common.authenticate(bd, usuario, contrasena, {})
-
 models = xmlrpc.client.ServerProxy(f'{url}/xmlrpc/2/object')
 
 app = Flask(__name__)
-
 
 @app.route('/getDatos', methods=['GET'])
 def getDatos():
@@ -21,7 +19,6 @@ def getDatos():
 
     domain = []
     if nombre:
-    
         domain = [['name', 'ilike', nombre]]
 
     clientes = models.execute_kw(
@@ -30,8 +27,13 @@ def getDatos():
         [domain],
         {'fields': ['id', 'name', 'email']}
     )
-    return jsonify(clientes)
 
+
+    personas_path = r"C:\Users\ikmsuarez23\Desktop\Reto\ApiReto\usuario.json"
+    with open(personas_path, "w", encoding="utf-8") as f:
+        json.dump(clientes, f, indent=4, ensure_ascii=False)
+
+    return jsonify(clientes)
 
 if __name__ == '__main__':
     app.run(debug=True)
