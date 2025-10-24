@@ -13,7 +13,7 @@ models = xmlrpc.client.ServerProxy(f'{url}/xmlrpc/2/object')
 
 app = Flask(__name__)
 
-"""METODOS INTERFACES"""
+"""METODOS MOVILES"""
 
 @app.route('/getDatos', methods=['GET'])
 def getDatos():
@@ -94,6 +94,52 @@ def modificarCliente(id):
         return jsonify({'mensaje': f'Cliente {id} modificado correctamente'})
     except Exception as e:
         return jsonify({'error': f'Error al modificar cliente: {str(e)}'}), 500
+    
+@app.route('/eliminarCliente/<int:id>' , methods=['DELETE'])
+def eliminarCliente(id):
+    if not id :
+        return jsonify({'error': 'No se ha borrado el contacto'}),400
+    
+    try:
+        models.execute_kw(
+            bd, uid, contrasena,
+            'res.partner', 'unlink',
+            [[id]]
+        )
+        return jsonify({'mensaje': f'Cliente {id} eliminado correctamente'})
+    except Exception as e:
+        return jsonify({'error': f'Error al eliminar cliente: {str(e)}'}), 500  
+    
+    
+"""METODOS INTERFACES"""
+@app.route('/VentasMes', methods=['GET'])
+def VentasMes():
+    from datetime import datetime
+    
+    hoy = datetime.today()
+    PrimerDia = hoy.replace(day=1).strftime('%Y-%m-%d 00:00:00')
+    UltimoDia = hoy.strftime('%Y-%m-%d 23:59:59')
+    
+    domain = [
+    ['date_order', '>=', PrimerDia],
+    ['date_order', '<=', UltimoDia],
+    ['state', 'in', ['sale','done']]
+    ]
+    
+    try:
+        ventas_mes = models.execute_kw(
+            bd,uid,contrasena,
+            'sale.order' , 'search_count',
+            [domain]
+    )
+        ventas = r'C:\Users\ikmsuarez23\Desktop\Reto\ApiReto\ventas.json'
+        with open(ventas, "w" , encoding="utf-8") as num_ventas:
+            json.dump(ventas_mes, num_ventas, indent=4, ensure_ascii=False)
 
+        return jsonify({'Ventas mes' : ventas_mes})
+    except Exception as e:
+        return jsonify({'error': f'Error al obtener ventas: {str(e)}'}), 500
+    
+        
 if __name__ == '__main__':
     app.run(debug=True)
