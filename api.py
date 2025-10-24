@@ -13,6 +13,8 @@ models = xmlrpc.client.ServerProxy(f'{url}/xmlrpc/2/object')
 
 app = Flask(__name__)
 
+"""METODOS INTERFACES"""
+
 @app.route('/getDatos', methods=['GET'])
 def getDatos():
     nombre = request.args.get('nombre', '')
@@ -65,6 +67,33 @@ def añadirDatos():
     except Exception as e:
         return jsonify({'error': f'Error al crear cliente: {str(e)}'}), 500
 
+@app.route('/modificarCliente/<int:id>' , methods=['PUT'])
+def modificarCliente(id):
+    data = request.json
+    nuevo_nombre = data.get('name')
+    nuevo_email = data.get('email')
+    
+
+    values= {}
+    if nuevo_nombre: 
+        values['name'] = nuevo_nombre
+        
+    if nuevo_email:
+        values['email'] = nuevo_email
+        
+    if not values :
+        return jsonify({'error': 'No hay datos para  modificar '}),400 
+        
+    
+    try:
+        models.execute_kw(
+            bd, uid, contrasena,
+            'res.partner', 'write',
+            [[int (id)], values]
+        )
+        return jsonify({'mensaje': f'Cliente {id} modificado correctamente'})
+    except Exception as e:
+        return jsonify({'error': f'Error al modificar cliente: {str(e)}'}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)
