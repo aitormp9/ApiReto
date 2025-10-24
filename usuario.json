@@ -95,9 +95,19 @@
         "email": "jennie.fletcher76@example.com"
     },
     {
+        "id": 84,
+        "name": "Jorge",
+        "email": "Jorge@TechSolutions.com"
+    },
+    {
         "id": 57,
         "name": "Keith Byrd",
         "email": "keith.byrd52@example.com"
+    },
+    {
+        "id": 83,
+        "name": "Laura Martinez",
+        "email": "laura.martinez@TechSolutions.com"
     },
     {
         "id": 70,
