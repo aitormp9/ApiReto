@@ -29,7 +29,8 @@ def getDatos():
     )
 
 
-    personas = r"C:\\aitormindeguia\\Reto1\\ApiReto1\\ApiReto\\usuario.json"
+    """personas = r"C:\\aitormindeguia\\Reto1\\ApiReto1\\ApiReto\\usuario.json"""
+    personas = r"C:\Users\ikmsuarez23\Desktop\Reto\ApiReto\usuario.json"
     with open(personas, "w", encoding="utf-8") as usuario:
         json.dump(clientes, usuario, indent=4, ensure_ascii=False)
 
