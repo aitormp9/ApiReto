@@ -35,5 +35,33 @@ def getDatos():
 
     return jsonify(clientes)
 
+@app.route('/añadirDatos' , methods=['POST'])
+def añadirDatos():
+   data = request.json
+   id = data.get('id')
+   nombre = data.get('name') 
+   email = data.get('email')
+   
+   if not nombre:
+       return jsonify({'error': 'El nombre es obligatorio'}), 400
+   
+   nuevo_cliente ={
+        'name': nombre,
+        'email': email
+   }
+  
+   if id :
+    nuevo_cliente['rwf']= str(id)
+      
+    try:
+        cliente_id = models.execute_kw(
+            bd, uid, contrasena,
+            'res.partner', 'create',
+            [nuevo_cliente]
+        )
+        return jsonify({'mensaje': 'Cliente creado correctamente', 'id_odoo': cliente_id}), 201
+    except Exception as e:
+        return jsonify({'error': f'Error al crear cliente: {str(e)}'}), 500
+
 if __name__ == '__main__':
     app.run(debug=True)
