@@ -130,15 +130,68 @@ def VentasMes():
         ventas_mes = models.execute_kw(
             bd,uid,contrasena,
             'sale.order' , 'search_count',
-            [domain]
+            [domain]     
     )
-        ventas = r'C:\Users\ikmsuarez23\Desktop\Reto\ApiReto\ventas.json'
-        with open(ventas, "w" , encoding="utf-8") as num_ventas:
-            json.dump(ventas_mes, num_ventas, indent=4, ensure_ascii=False)
-
         return jsonify({'Ventas mes' : ventas_mes})
     except Exception as e:
         return jsonify({'error': f'Error al obtener ventas: {str(e)}'}), 500
+
+
+@app.route('/TotalVentas', methods=['GET'])
+def totalVentas():
+    try:
+        
+        domain = [
+            ['state', 'in', ['sale', 'done']]
+        ]
+
+        ventas_ids = models.execute_kw(
+            bd, uid, contrasena,
+            'sale.order', 'search',
+            [domain]
+        )
+
+        if not ventas_ids:
+            return jsonify({'TotalVentas': 0, 'mensaje': 'No hay ventas registradas'})
+
+        ventas = models.execute_kw(
+            bd, uid, contrasena,
+            'sale.order', 'read',
+            [ventas_ids],
+            {'fields': ['amount_total']}
+        )
+
+        total = sum(v['amount_total'] for v in ventas if 'amount_total' in v)
+
+        return jsonify({'TotalVentas': total})
+    
+    except Exception as e:
+        return jsonify({'error': f'Error al obtener el total de ventas: {str(e)}'}), 500
+
+    
+@app.route('/PedidosPendientes' , methods=['GET'])
+def PedidosPendientes():
+    try:
+       
+            
+            domain =[
+                ['state' , '=' , 'sale']
+            ]
+            
+            pedidos_pendientes = models.execute_kw(
+                bd,uid,contrasena,
+                'sale.order' , 'search_read',
+                [domain],
+                {'fields' : ['id' , 'name' , 'date_order' , 'amount_total' , 'state']}
+            )
+            
+            return jsonify({'Pedidos Pendientes' : pedidos_pendientes})
+    
+    except Exception as e :
+        return jsonify({'error' : f'Error del estado del pedido; {str(e)}'}),500
+    
+  
+    
     
         
 if __name__ == '__main__':

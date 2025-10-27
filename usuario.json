@@ -55,11 +55,6 @@
         "email": "chicago@yourcompany.com"
     },
     {
-        "id": 1,
-        "name": "My Company (San Francisco)",
-        "email": "info@yourcompany.com"
-    },
-    {
         "id": 73,
         "name": "Pablo Sánchez",
         "email": "pablo.sanchez@TechSolutions.com"
@@ -88,11 +83,6 @@
         "id": 8,
         "name": "Joel Willis",
         "email": "joel.willis63@example.com"
-    },
-    {
-        "id": 7,
-        "name": "Marc Demo",
-        "email": "mark.brown23@example.com"
     },
     {
         "id": 3,
