@@ -5,10 +5,10 @@ import xmlrpc.client
 url = "http://reto1odoo.duckdns.org:8069"
 bd = "Reto1-TechSolutions"
 usuario = "mikelaitoribai"
-contrasena = "maireto"
+contraseña = "maireto"
 
 common = xmlrpc.client.ServerProxy(f'{url}/xmlrpc/2/common')
-uid = common.authenticate(bd, usuario, contrasena, {})
+uid = common.authenticate(bd, usuario, contraseña, {})
 models = xmlrpc.client.ServerProxy(f'{url}/xmlrpc/2/object')
 
 app = Flask(__name__)
@@ -24,7 +24,7 @@ def getDatos():
         domain = [['name', 'ilike', nombre]]
 
     clientes = models.execute_kw(
-        bd, uid, contrasena,
+        bd, uid, contraseña,
         'res.partner', 'search_read',
         [domain],
         {'fields': ['id', 'name', 'email']}
@@ -59,7 +59,7 @@ def añadirDatos():
     
     try:
         cliente_id = models.execute_kw(
-            bd, uid, contrasena,
+            bd, uid, contraseña,
             'res.partner', 'create',
             [nuevo_cliente]
         )
@@ -87,7 +87,7 @@ def modificarCliente(id):
     
     try:
         models.execute_kw(
-            bd, uid, contrasena,
+            bd, uid, contraseña,
             'res.partner', 'write',
             [[int (id)], values]
         )
@@ -102,7 +102,7 @@ def eliminarCliente(id):
     
     try:
         models.execute_kw(
-            bd, uid, contrasena,
+            bd, uid, contraseña,
             'res.partner', 'unlink',
             [[id]]
         )
@@ -128,7 +128,7 @@ def VentasMes():
     
     try:
         ventas_mes = models.execute_kw(
-            bd,uid,contrasena,
+            bd,uid,contraseña,
             'sale.order' , 'search_count',
             [domain]     
     )
@@ -146,7 +146,7 @@ def totalVentas():
         ]
 
         ventas_ids = models.execute_kw(
-            bd, uid, contrasena,
+            bd, uid, contraseña,
             'sale.order', 'search',
             [domain]
         )
@@ -155,7 +155,7 @@ def totalVentas():
             return jsonify({'TotalVentas': 0, 'mensaje': 'No hay ventas registradas'})
 
         ventas = models.execute_kw(
-            bd, uid, contrasena,
+            bd, uid, contraseña,
             'sale.order', 'read',
             [ventas_ids],
             {'fields': ['amount_total']}
@@ -172,14 +172,13 @@ def totalVentas():
 @app.route('/PedidosPendientes' , methods=['GET'])
 def PedidosPendientes():
     try:
-       
             
             domain =[
                 ['state' , '=' , 'sale']
             ]
             
             pedidos_pendientes = models.execute_kw(
-                bd,uid,contrasena,
+                bd,uid,contraseña,
                 'sale.order' , 'search_read',
                 [domain],
                 {'fields' : ['id' , 'name' , 'date_order' , 'amount_total' , 'state']}
@@ -188,11 +187,48 @@ def PedidosPendientes():
             return jsonify({'Pedidos Pendientes' : pedidos_pendientes})
     
     except Exception as e :
-        return jsonify({'error' : f'Error del estado del pedido; {str(e)}'}),500
+        return jsonify({'error' : f'Error del estado del pedido: {str(e)}'}),500
     
-  
+
+@app.route('/StockBajo' , methods=['GET'])
+def StockBajos():
     
+    try:
+        domain=[
+            ['qty_available', '<' , 5]
+            ]
+        
+        
+        productos_stockBajo = models.execute_kw(
+            bd,uid,contraseña,
+            'product.product' , 'search_read',
+            [domain],
+            {'fields' : ['id' , 'name' , 'qty_available' , 'virtual_available']}
+        )
+        
+        return jsonify({'Producto stock bajo' : productos_stockBajo})
+    except Exception as e :
+        return jsonify({'error' : f'Error de stock del producto: {str(e)}'}),500
     
+@app.route('/ClientesDestacados', methods=['GET'])
+def ClientesDestacados():
+    try:
+        nombre = request.args.get('nombre', '')
+
+        domain = [['customer_rank' , '>=' , 1]]
+        if nombre:
+            domain.append = [['name', 'ilike', nombre]]
+
+        clientes_destacados = models.execute_kw(
+            bd, uid, contraseña,
+            'res.partner', 'search_read',
+            [domain],
+            {'fields': ['id', 'name', 'email' , 'customer_rank']}
+        )   
+        
+        return jsonify({'Clientes destacados': clientes_destacados})
+    except Exception as e :
+        return jsonify({'error' : f'Error de cliente destacado: {str(e)}'}),500
         
 if __name__ == '__main__':
     app.run(debug=True)
