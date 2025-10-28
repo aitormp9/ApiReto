@@ -198,7 +198,6 @@ def StockBajos():
             ['qty_available', '<' , 5]
             ]
         
-        
         productos_stockBajo = models.execute_kw(
             bd,uid,contraseña,
             'product.product' , 'search_read',
