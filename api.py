@@ -195,7 +195,7 @@ def StockBajos():
     
     try:
         domain=[
-            ['qty_available', '>=' , 0]
+            ['qty_available', '>' , 0]
             ]
         
         productos_stockBajo = models.execute_kw(
