@@ -195,7 +195,7 @@ def StockBajos():
     
     try:
         domain=[
-            ['qty_available', '<' , 5]
+            ['qty_available', '>=' , 0]
             ]
         
         productos_stockBajo = models.execute_kw(
@@ -230,4 +230,4 @@ def ClientesDestacados():
         return jsonify({'error' : f'Error de cliente destacado: {str(e)}'}),500
         
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=5000)
