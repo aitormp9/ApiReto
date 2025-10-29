@@ -174,7 +174,7 @@ def PedidosPendientes():
     try:
             
             domain =[
-                ['state' , '=' , 'sale']
+          ['state', 'in', ['sale', 'draft', 'done']]
             ]
             
             pedidos_pendientes = models.execute_kw(
