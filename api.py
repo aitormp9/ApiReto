@@ -29,9 +29,11 @@ def getDatos():
         bd, uid, contraseña,
         'res.partner', 'search_read',
         [domain],
-        {'fields': ['id', 'name', 'email']}
+        {'fields': ['id', 'name', 'email','phone','image_1920']}
     )
-
+    for c in clientes:
+            if 'image_1920' in c:
+                c.pop('image_1920') 
 
     """personas = r"C:\\aitormindeguia\\Reto1\\ApiReto1\\ApiReto\\usuario.json"""
     personas = r"C:\Users\ikmsuarez23\Desktop\Reto\ApiReto\usuario.json"
@@ -63,6 +65,8 @@ def añadirDatos():
     id_cliente = data.get('id')
     nombre = data.get('name') 
     email = data.get('email')
+    telefono = data.get('phone')
+    foto = data.get('photo')
     
     if not nombre:
         return jsonify({'error': 'El nombre es obligatorio'}), 400
@@ -74,8 +78,11 @@ def añadirDatos():
     if email:
         nuevo_cliente['email'] = email
     if id_cliente:
-        nuevo_cliente['ref'] = str(id_cliente)  
-    
+        nuevo_cliente['ref'] = str(id_cliente)    
+    if telefono:
+        nuevo_cliente['phone'] = telefono
+    if foto:
+        nuevo_cliente['image_1920'] = foto
     try:
         cliente_id = models.execute_kw(
             bd, uid, contraseña,
@@ -91,14 +98,21 @@ def modificarCliente(id):
     data = request.json
     nuevo_nombre = data.get('name')
     nuevo_email = data.get('email')
+    nuevo_telefono = data.get('phone')
+    nueva_foto = data.get('image_1920')
     
-
     values= {}
     if nuevo_nombre: 
         values['name'] = nuevo_nombre
         
     if nuevo_email:
         values['email'] = nuevo_email
+        
+    if nuevo_telefono:
+        values['phone'] = nuevo_telefono
+        
+    if nueva_foto:
+        values['image_1920'] = nueva_foto
         
     if not values :
         return jsonify({'error': 'No hay datos para  modificar '}),400 
