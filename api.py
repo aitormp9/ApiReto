@@ -1,6 +1,7 @@
 import json
 from flask import Flask, request, jsonify
 import xmlrpc.client
+from flask_cors import CORS 
 
 url = "http://reto1odoo.duckdns.org:8069"
 bd = "Reto1-TechSolutions"
@@ -12,6 +13,7 @@ uid = common.authenticate(bd, usuario, contraseña, {})
 models = xmlrpc.client.ServerProxy(f'{url}/xmlrpc/2/object')
 
 app = Flask(__name__)
+CORS(app)
 
 """METODOS MOVILES"""
 
