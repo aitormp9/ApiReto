@@ -37,6 +37,23 @@ def getDatos():
         json.dump(clientes, usuario, indent=4, ensure_ascii=False)
 
     return jsonify(clientes)
+@app.route('/login', methods=['POST'])
+def login():
+    data = request.json
+    username = data.get('username')
+    password = data.get('password')
+
+    if not username or not password:
+        return jsonify({'error': 'Usuario y contraseña son obligatorios'}), 400
+
+    try:
+        uid = common.authenticate(bd, username, password, {})
+        if uid:
+            return jsonify({'uid': uid, 'username': username}), 200
+        else:
+            return jsonify({'error': 'Usuario o contraseña incorrectos'}), 401
+    except Exception as e:
+        return jsonify({'error': f'Error de autenticación: {str(e)}'}), 500
 
 @app.route('/añadirDatos' , methods=['POST'])
 def añadirDatos():
@@ -230,4 +247,4 @@ def ClientesDestacados():
         return jsonify({'error' : f'Error de cliente destacado: {str(e)}'}),500
         
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    app.run(host='0.0.0.0', debug=True, port=5000)
