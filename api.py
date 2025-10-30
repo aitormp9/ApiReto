@@ -25,22 +25,22 @@ def getDatos():
     if nombre:
         domain = [['name', 'ilike', nombre]]
 
-    clientes = models.execute_kw(
+    contactos = models.execute_kw(
         bd, uid, contraseña,
         'res.partner', 'search_read',
         [domain],
         {'fields': ['id', 'name', 'email','phone','image_1920']}
     )
-    for c in clientes:
+    for c in contactos:
             if 'image_1920' in c:
                 c.pop('image_1920') 
 
     """personas = r"C:\\aitormindeguia\\Reto1\\ApiReto1\\ApiReto\\usuario.json"""
     personas = r"C:\Users\ikmsuarez23\Desktop\Reto\ApiReto\usuario.json"
     with open(personas, "w", encoding="utf-8") as usuario:
-        json.dump(clientes, usuario, indent=4, ensure_ascii=False)
+        json.dump(contactos, usuario, indent=4, ensure_ascii=False)
 
-    return jsonify(clientes)
+    return jsonify(contactos)
 @app.route('/login', methods=['POST'])
 def login():
     data = request.json
@@ -62,7 +62,7 @@ def login():
 @app.route('/añadirDatos' , methods=['POST'])
 def añadirDatos():
     data = request.json
-    id_cliente = data.get('id')
+    id_contacto = data.get('id')
     nombre = data.get('name') 
     email = data.get('email')
     telefono = data.get('phone')
@@ -72,29 +72,29 @@ def añadirDatos():
         return jsonify({'error': 'El nombre es obligatorio'}), 400
     
  
-    nuevo_cliente = {
+    nuevo_contacto = {
         'name': nombre
     }
     if email:
-        nuevo_cliente['email'] = email
-    if id_cliente:
-        nuevo_cliente['ref'] = str(id_cliente)    
+        nuevo_contacto['email'] = email
+    if id_contacto:
+        nuevo_contacto['ref'] = str(id_contacto)    
     if telefono:
-        nuevo_cliente['phone'] = telefono
+        nuevo_contacto['phone'] = telefono
     if foto:
-        nuevo_cliente['image_1920'] = foto
+        nuevo_contacto['image_1920'] = foto
     try:
-        cliente_id = models.execute_kw(
+        contacto_id = models.execute_kw(
             bd, uid, contraseña,
             'res.partner', 'create',
-            [nuevo_cliente]
+            [nuevo_contacto]
         )
-        return jsonify({'mensaje': 'Cliente creado correctamente', 'id_odoo': cliente_id}), 201
+        return jsonify({'mensaje': 'Contacto creado correctamente', 'id_odoo': contacto_id}), 201
     except Exception as e:
-        return jsonify({'error': f'Error al crear cliente: {str(e)}'}), 500
+        return jsonify({'error': f'Error al crear contacto: {str(e)}'}), 500
 
-@app.route('/modificarCliente/<int:id>' , methods=['PUT'])
-def modificarCliente(id):
+@app.route('/modificarContacto/<int:id>' , methods=['PUT'])
+def modificarContacto(id):
     data = request.json
     nuevo_nombre = data.get('name')
     nuevo_email = data.get('email')
@@ -124,12 +124,12 @@ def modificarCliente(id):
             'res.partner', 'write',
             [[int (id)], values]
         )
-        return jsonify({'mensaje': f'Cliente {id} modificado correctamente'})
+        return jsonify({'mensaje': f'Contacto {id} modificado correctamente'})
     except Exception as e:
-        return jsonify({'error': f'Error al modificar cliente: {str(e)}'}), 500
+        return jsonify({'error': f'Error al modificar contacto: {str(e)}'}), 500
     
-@app.route('/eliminarCliente/<int:id>' , methods=['DELETE'])
-def eliminarCliente(id):
+@app.route('/eliminarContacto/<int:id>' , methods=['DELETE'])
+def eliminarContacto(id):
     if not id :
         return jsonify({'error': 'No se ha borrado el contacto'}),400
     
@@ -139,9 +139,9 @@ def eliminarCliente(id):
             'res.partner', 'unlink',
             [[id]]
         )
-        return jsonify({'mensaje': f'Cliente {id} eliminado correctamente'})
+        return jsonify({'mensaje': f'Contacto {id} eliminado correctamente'})
     except Exception as e:
-        return jsonify({'error': f'Error al eliminar cliente: {str(e)}'}), 500  
+        return jsonify({'error': f'Error al eliminar contacto: {str(e)}'}), 500  
     
     
 """METODOS INTERFACES"""
