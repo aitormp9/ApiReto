@@ -32,11 +32,13 @@ def getDatos():
         {'fields': ['id', 'name', 'email','phone','image_1920']}
     )
     for c in contactos:
-            if 'image_1920' in c:
-                c.pop('image_1920') 
+        if 'image_1920' in c and c['image_1920']:
+            c['image_1920'] = f"data:image/png;base64,{c['image_1920']}"   
 
-    """personas = r"C:\\aitormindeguia\\Reto1\\ApiReto1\\ApiReto\\usuario.json"""
-    personas = r"C:\Users\ikmsuarez23\Desktop\Reto\ApiReto\usuario.json"
+    return jsonify(contactos)
+
+    personas = r"C:\\aitormindeguia\\Reto1\\ApiReto1\\ApiReto\\usuario.json"
+    # personas = r"C:\Users\ikmsuarez23\Desktop\Reto\ApiReto\usuario.json"
     with open(personas, "w", encoding="utf-8") as usuario:
         json.dump(contactos, usuario, indent=4, ensure_ascii=False)
 
