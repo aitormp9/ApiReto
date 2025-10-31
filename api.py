@@ -68,7 +68,7 @@ def añadirDatos():
     nombre = data.get('name') 
     email = data.get('email')
     telefono = data.get('phone')
-    foto = data.get('photo')
+    foto = data.get('image_1920')
     
     if not nombre:
         return jsonify({'error': 'El nombre es obligatorio'}), 400
@@ -84,6 +84,8 @@ def añadirDatos():
     if telefono:
         nuevo_contacto['phone'] = telefono
     if foto:
+        if foto.startswith('data:image'):
+            foto = foto.split(',')[1]  
         nuevo_contacto['image_1920'] = foto
     try:
         contacto_id = models.execute_kw(
@@ -114,6 +116,8 @@ def modificarContacto(id):
         values['phone'] = nuevo_telefono
         
     if nueva_foto:
+        if nueva_foto.startswith('data:image'):
+            nueva_foto = nueva_foto.split(',')[1]  # Base64 limpio
         values['image_1920'] = nueva_foto
         
     if not values :
