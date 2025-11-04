@@ -1,22 +1,26 @@
+#Imports
 import json
 from flask import Flask, request, jsonify
 import xmlrpc.client
 from flask_cors import CORS 
-
+#Url del Api de nuestro odoo, con su base de datos, nuestro usuario y la contraseña
 url = "http://reto1odoo.duckdns.org:8069"
 bd = "Reto1-TechSolutions"
 usuario = "mikelaitoribai"
 contraseña = "maireto"
 
+#Conexion con el endpoint/Common de odoo
 common = xmlrpc.client.ServerProxy(f'{url}/xmlrpc/2/common')
+#Autenticacipn o credenciales correctas
 uid = common.authenticate(bd, usuario, contraseña, {})
+#Apunta al endpoint/Objecto de odod
 models = xmlrpc.client.ServerProxy(f'{url}/xmlrpc/2/object')
 
 app = Flask(__name__)
 CORS(app)
 
 """METODOS MOVILES"""
-
+#Metodo de recoger los datos de nuestros contactos de odoo 
 @app.route('/getDatos', methods=['GET'])
 def getDatos():
     nombre = request.args.get('nombre', '')
@@ -43,6 +47,8 @@ def getDatos():
         json.dump(contactos, usuario, indent=4, ensure_ascii=False)
 
     return jsonify(contactos)
+
+#Metodo del login en el cual insertamos datos 
 @app.route('/login', methods=['POST'])
 def login():
     data = request.json
@@ -61,6 +67,7 @@ def login():
     except Exception as e:
         return jsonify({'error': f'Error de autenticación: {str(e)}'}), 500
 
+#Metodo añadir tambien en el cual añadimos datos, para poder añadir nuevos contactos
 @app.route('/añadirDatos' , methods=['POST'])
 def añadirDatos():
     data = request.json
@@ -97,6 +104,7 @@ def añadirDatos():
     except Exception as e:
         return jsonify({'error': f'Error al crear contacto: {str(e)}'}), 500
 
+#Metodo de modificar el contacto en el cual cogemos un contacto y le indicamos el id de ese contacto y despues hacemos la modificacion
 @app.route('/modificarContacto/<int:id>' , methods=['PUT'])
 def modificarContacto(id):
     data = request.json
@@ -117,7 +125,7 @@ def modificarContacto(id):
         
     if nueva_foto:
         if nueva_foto.startswith('data:image'):
-            nueva_foto = nueva_foto.split(',')[1]  
+            nueva_foto = nueva_foto.split(',')[1]  # Base64 limpio
         values['image_1920'] = nueva_foto
         
     if not values :
@@ -133,7 +141,8 @@ def modificarContacto(id):
         return jsonify({'mensaje': f'Contacto {id} modificado correctamente'})
     except Exception as e:
         return jsonify({'error': f'Error al modificar contacto: {str(e)}'}), 500
-    
+
+#Metodo de eliminar contacto es parecido a modificar solo que el metodo es delete pero tambien cogemos el id de ese contacto    
 @app.route('/eliminarContacto/<int:id>' , methods=['DELETE'])
 def eliminarContacto(id):
     if not id :
@@ -151,6 +160,7 @@ def eliminarContacto(id):
     
     
 """METODOS INTERFACES"""
+#Metodo del numero de ventas del mes, hacemos un get desde el primer y el ultimo dia del mes, a traves de la fuente de ventas 
 @app.route('/VentasMes', methods=['GET'])
 def VentasMes():
     from datetime import datetime
@@ -175,7 +185,7 @@ def VentasMes():
     except Exception as e:
         return jsonify({'error': f'Error al obtener ventas: {str(e)}'}), 500
 
-
+#Metodo de total de ventas tambien es un metodo get, en el cual cogemos todo el presupuesto y tambien desde la fuente de ventas
 @app.route('/TotalVentas', methods=['GET'])
 def totalVentas():
     try:
@@ -207,7 +217,7 @@ def totalVentas():
     except Exception as e:
         return jsonify({'error': f'Error al obtener el total de ventas: {str(e)}'}), 500
 
-    
+ #Metodo de pedidosPendientes hago la llamada de los pedidos pero aqui llamo a todos luego en la interfaz si que los separo por su estado 
 @app.route('/PedidosPendientes' , methods=['GET'])
 def PedidosPendientes():
     try:
@@ -228,7 +238,7 @@ def PedidosPendientes():
     except Exception as e :
         return jsonify({'error' : f'Error del estado del pedido: {str(e)}'}),500
     
-
+#Metodo de stockBajo igual que en pedidos pendientes llamo a todos los productos por la fuente de product.product y en la interfaz tambien los separo en funcion de su estado
 @app.route('/StockBajo' , methods=['GET'])
 def StockBajos():
     
@@ -247,7 +257,8 @@ def StockBajos():
         return jsonify({'Producto stock bajo' : productos_stockBajo})
     except Exception as e :
         return jsonify({'error' : f'Error de stock del producto: {str(e)}'}),500
-    
+   
+#Metodo de clientes destacados hago la llamada en funcion del numero de compras , en este caso igual a 1 o mayor que 1 
 @app.route('/ClientesDestacados', methods=['GET'])
 def ClientesDestacados():
     try:
