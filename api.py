@@ -117,7 +117,7 @@ def modificarContacto(id):
         
     if nueva_foto:
         if nueva_foto.startswith('data:image'):
-            nueva_foto = nueva_foto.split(',')[1]  # Base64 limpio
+            nueva_foto = nueva_foto.split(',')[1]  
         values['image_1920'] = nueva_foto
         
     if not values :
